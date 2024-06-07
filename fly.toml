@@ -1,5 +1,5 @@
-app = ''
-primary_region = ''
+app = 'suinfra-rpc-router'
+primary_region = 'nrt'
 
 [build]
 
