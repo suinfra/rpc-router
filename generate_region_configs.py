@@ -61,10 +61,15 @@ def get_rpc_order_for_regions():
             # Skip paid endpoints.
             if rpc["rpc_name"].endswith("_paid"):
                 continue
-            # Skip TritonOne.
-            if rpc["rpc_name"].startswith("triton_one"):
+            # Skip some endpoints that are hard to proxy to.
+            if (
+                rpc["rpc_name"].startswith("triton_one")
+                or rpc["rpc_name"].startswith("suiet")
+                or rpc["rpc_name"].startswith("suiscan")
+                or rpc["rpc_name"].startswith("blastapi")
+                or rpc["rpc_name"].startswith("blockvision")
+            ):
                 continue
-            print(rpc["rpc_name"], rpc["avg_latency"])
             rpc_endpoint = RpcEndpoint(
                 name=rpc["rpc_name"].replace("_free", ""),
                 url=rpc["rpc_url"],
@@ -111,7 +116,6 @@ def generate_rpc_backend_configs(
             f"\thttp-request set-header Host {rpc.url.replace('https://', '')}",
             '\thttp-response set-header X-Routed-By "$FLY_REGION":"$FLY_MACHINE_ID"',
             "\thttp-response set-header X-Routed-To %s",
-            "\thttp-response set-header X-Edge-Region %s",
             f"\tserver {rpc.url.replace('https://', '')} {rpc.url.replace('https://', '')}:443 check ssl verify none check-sni {rpc.url.replace('https://', '')}",
         )
         backends.append("\n".join(config_text))
